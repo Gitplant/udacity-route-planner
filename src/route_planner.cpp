@@ -42,6 +42,7 @@ float RoutePlanner::CalculateHValue(RouteModel::Node const *node) {
 
 void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
     current_node->FindNeighbors();
+    // this->PrintOpenList();
     for (RouteModel::Node *node: current_node->neighbors){
         node->parent = current_node;
         node->g_value = current_node->g_value + current_node->distance(*node);
@@ -49,9 +50,19 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
         node->visited = true;
         this->open_list.push_back(node);
     }
+    this->PrintOpenList();
 
+    //Remove this later:
+    // this->NextNode();
 }
 
+void RoutePlanner::PrintOpenList(){
+    std::cout << "Open list: ";
+    for (RouteModel::Node* node: this->open_list){
+        std::cout << "(" << node->x << ", " << node->y << " g=" << node->g_value << " h=" << node->h_value << ") ";
+    }
+    std::cout << "\n";
+}
 
 // TODO 5: Complete the NextNode method to sort the open list and return the next node.
 // Tips:
@@ -60,9 +71,17 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
 // - Remove that node from the open_list.
 // - Return the pointer.
 
-RouteModel::Node *RoutePlanner::NextNode() {
-
+static bool Compare(const RouteModel::Node* a, const RouteModel::Node* b){
+    return (a->g_value + a->h_value) > (b->g_value + b->h_value);
 }
+RouteModel::Node *RoutePlanner::NextNode() {
+    sort(this->open_list.begin(), this->open_list.end(), Compare);
+    RouteModel::Node *next_node = this->open_list.back();
+    this->open_list.pop_back();
+
+    return next_node;
+}
+
 
 
 // TODO 6: Complete the ConstructFinalPath method to return the final path found from your A* search.
@@ -74,6 +93,7 @@ RouteModel::Node *RoutePlanner::NextNode() {
 //   of the vector, the end node should be the last element.
 
 std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(RouteModel::Node *current_node) {
+    std::cout << "Constructing final path\n";
     // Create path_found vector
     distance = 0.0f;
     std::vector<RouteModel::Node> path_found;
