@@ -26,9 +26,9 @@ RoutePlanner::RoutePlanner(RouteModel &model, float start_x, float start_y, floa
 // - Node objects have a distance method to determine the distance to another node.
 
 float RoutePlanner::CalculateHValue(RouteModel::Node const *node) {
-    std::cout << "Computing distance from (" << node->x << ", " << node->y << ") to (" << this->end_node->x << ", " << this->end_node->y << ")\n";
+    // std::cout << "Computing distance from (" << node->x << ", " << node->y << ") to (" << this->end_node->x << ", " << this->end_node->y << ")\n";
     float d = node->distance(*(this->end_node));
-    std::cout << "Distance = " << d << "\n";
+    // std::cout << "Distance = " << d << "\n";
     return d;
 }
 
@@ -41,6 +41,14 @@ float RoutePlanner::CalculateHValue(RouteModel::Node const *node) {
 // - For each node in current_node.neighbors, add the neighbor to open_list and set the node's visited attribute to true.
 
 void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
+    current_node->FindNeighbors();
+    for (RouteModel::Node *node: current_node->neighbors){
+        node->parent = current_node;
+        node->g_value = current_node->g_value + current_node->distance(*node);
+        node->h_value = this->CalculateHValue(node);
+        node->visited = true;
+        this->open_list.push_back(node);
+    }
 
 }
 
