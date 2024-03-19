@@ -42,7 +42,6 @@ float RoutePlanner::CalculateHValue(RouteModel::Node const *node) {
 
 void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
     current_node->FindNeighbors();
-    // this->PrintOpenList();
     for (RouteModel::Node *node: current_node->neighbors){
         node->parent = current_node;
         node->g_value = current_node->g_value + current_node->distance(*node);
@@ -50,10 +49,6 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
         node->visited = true;
         this->open_list.push_back(node);
     }
-    this->PrintOpenList();
-
-    //Remove this later:
-    // this->NextNode();
 }
 
 void RoutePlanner::PrintOpenList(){
@@ -99,6 +94,16 @@ std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(RouteModel::Node 
     std::vector<RouteModel::Node> path_found;
 
     // TODO: Implement your solution here.
+    std::cout << "Start TODO 6\n";
+    while(current_node != this->start_node){
+        distance += current_node->distance(*(current_node->parent));
+        path_found.insert(path_found.begin(), *current_node);
+        // std::cout << "path.size() = " << path_found.size() << "\n";
+        // std::cout << "x = " << current_node->x << " y = " << current_node->y << "\n";
+        current_node = current_node->parent;
+    }
+    path_found.insert(path_found.begin(), *current_node);
+    std::cout << "End TODO 6\n";
 
     distance *= m_Model.MetricScale(); // Multiply the distance by the scale of the map to get meters.
     return path_found;
@@ -117,5 +122,17 @@ void RoutePlanner::AStarSearch() {
     RouteModel::Node *current_node = nullptr;
 
     // TODO: Implement your solution here.
+    std::cout << "Start TODO 7\n";
+    this->start_node->visited = true;
+    this->open_list.push_back(this->start_node);
+    RouteModel::Node* next_node;
+    while (!this->open_list.empty()){
+        next_node = this->NextNode();
+        if (next_node == this->end_node){
+            m_Model.path = this->ConstructFinalPath(next_node);
+            return;
+        }
+        this->AddNeighbors(next_node);
+    }
 
 }
