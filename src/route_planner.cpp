@@ -12,8 +12,6 @@ RoutePlanner::RoutePlanner(RouteModel &model, float start_x, float start_y, floa
     // Store the nodes you find in the RoutePlanner's start_node and end_node attributes.
     this->start_node = &m_Model.FindClosestNode(start_x, start_y);
     this->end_node = &m_Model.FindClosestNode(end_x, end_y);
-    // this->start_node = start_node;
-    // this->end_node = end_node;
     std::cout << "Start node = (" << this->start_node->x << ", " << this->start_node->y << ")\n";
     std::cout << "End node = (" << this->end_node->x << ", " << this->end_node->y << ")\n";
 
@@ -26,9 +24,8 @@ RoutePlanner::RoutePlanner(RouteModel &model, float start_x, float start_y, floa
 // - Node objects have a distance method to determine the distance to another node.
 
 float RoutePlanner::CalculateHValue(RouteModel::Node const *node) {
-    // std::cout << "Computing distance from (" << node->x << ", " << node->y << ") to (" << this->end_node->x << ", " << this->end_node->y << ")\n";
     float d = node->distance(*(this->end_node));
-    // std::cout << "Distance = " << d << "\n";
+
     return d;
 }
 
@@ -94,16 +91,12 @@ std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(RouteModel::Node 
     std::vector<RouteModel::Node> path_found;
 
     // TODO: Implement your solution here.
-    std::cout << "Start TODO 6\n";
     while(current_node != this->start_node){
         distance += current_node->distance(*(current_node->parent));
         path_found.insert(path_found.begin(), *current_node);
-        // std::cout << "path.size() = " << path_found.size() << "\n";
-        // std::cout << "x = " << current_node->x << " y = " << current_node->y << "\n";
         current_node = current_node->parent;
     }
     path_found.insert(path_found.begin(), *current_node);
-    std::cout << "End TODO 6\n";
 
     distance *= m_Model.MetricScale(); // Multiply the distance by the scale of the map to get meters.
     return path_found;
@@ -122,7 +115,6 @@ void RoutePlanner::AStarSearch() {
     RouteModel::Node *current_node = nullptr;
 
     // TODO: Implement your solution here.
-    std::cout << "Start TODO 7\n";
     this->start_node->visited = true;
     this->open_list.push_back(this->start_node);
     RouteModel::Node* next_node;
